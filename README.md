@@ -1,2 +1,2 @@
 # apiconsumertest
-Consume Accounts API from FORM3
+Tests consuming accounts API from FORM3, using GO.
