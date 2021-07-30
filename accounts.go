@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -45,27 +49,44 @@ func create() {
 	url := "https://api.staging-form3.tech/v1/organisation/accounts"
 	method := "POST"
 
-	payload := strings.NewReader(`{
-		"data": {
-			"id": "{{random_guid}}",
-			"organisation_id": "",
-			"type": "accounts",
-			"attributes": {
-			"country": "GB",
-				"base_currency": "GBP",
-				"bank_id": "400302",
-				"bank_id_code": "GBDSC",
-				"account_number": "10000004",
-				"customer_id": "234",
-				"iban": "GB28NWBK40030212764204",
-				"bic": "NWBKGB42",
-				"account_classification": "Personal"
-			}
-		}
-	}`)
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		log.Fatal(err)
+	}
+	uuid := fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+
+	var accountClassification string = "Personal"
+	var country string = "GB"
+
+	payload := AccountData{
+		Attributes: &AccountAttributes{
+			AccountClassification:   &accountClassification,
+			AccountMatchingOptOut:   new(bool),
+			AccountNumber:           "10000004",
+			AlternativeNames:        []string{},
+			BankID:                  "400302",
+			BankIDCode:              "GBDSC",
+			BaseCurrency:            "GBP",
+			Bic:                     "NWBKGB42",
+			Country:                 &country,
+			Iban:                    "GB28NWBK40030212764204",
+			JointAccount:            new(bool),
+			Name:                    []string{},
+			SecondaryIdentification: "234",
+			Status:                  new(string),
+			Switched:                new(bool),
+		},
+		ID:             "",
+		OrganisationID: uuid,
+		Type:           "accounts",
+		Version:        new(int64),
+	}
+
+	reqbody, err := json.Marshal(payload)
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url, payload)
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqbody))
 
 	if err != nil {
 		fmt.Println(err)
