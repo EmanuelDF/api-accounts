@@ -9,9 +9,12 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
-// Account struct
+// Account represents an account in the form3 org section.
+// See https://api-docs.form3.tech/api.html#organisation-accounts for
+// more information about fields.
 type AccountData struct {
 	Attributes     *AccountAttributes `json:"attributes,omitempty"`
 	ID             string             `json:"id,omitempty"`
@@ -83,19 +86,25 @@ func create() {
 		Version:        new(int64),
 	}
 
-	reqbody, err := json.Marshal(payload)
-
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqbody))
-
+	reqbody, err := json.Marshal(payload)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	req.Header.Add("Authorization", "{{authorization}}")
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqbody))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	req.Header.Add("Authorization",
+		"Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date content-type accept digest content-length\",signature=\"sEl9KI0sK1NTxFYpVa+u8NBxnQx12zDEHSo/ijfvqi9z8zt5O1aXjoy8fyLvg/ICXaHoogb9oJ4C4i1iJDP1RCiTpW0OvwNPP4t0XlGnKlKX4iyLV4CofR8H9o/X5mcsiv/tVP7qCgP92efaisLCVjE9MKMPjDaA7Tj3gBbeYnI=%\"")
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Date", "{{request_date}}")
-	req.Header.Add("Digest", "{{request_signing_digest}}")
+	req.Header.Add("Date", time.Now().Format(time.RFC1123))
+	req.Header.Add("Digest", "SHA-256=WllU95a/P37KDBmTedpEIIvVtBgRqDdYrHz06NXDuvk=")
+
+	fmt.Println(req)
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -124,9 +133,10 @@ func fetch() {
 		fmt.Println(err)
 		return
 	}
-	req.Header.Add("Authorization", "{{authorization}}")
+	req.Header.Add("Authorization",
+		"Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date content-type accept digest content-length\",signature=\"sEl9KI0sK1NTxFYpVa+u8NBxnQx12zDEHSo/ijfvqi9z8zt5O1aXjoy8fyLvg/ICXaHoogb9oJ4C4i1iJDP1RCiTpW0OvwNPP4t0XlGnKlKX4iyLV4CofR8H9o/X5mcsiv/tVP7qCgP92efaisLCVjE9MKMPjDaA7Tj3gBbeYnI=%\"")
 	req.Header.Add("Accept", "application/vnd.api+json")
-	req.Header.Add("Date", "{{request_date}}")
+	req.Header.Add("Date", time.Now().Format(time.RFC1123))
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -157,8 +167,9 @@ func delete() {
 		fmt.Println(err)
 		return
 	}
-	req.Header.Add("Authorization", "{{authorization}}")
-	req.Header.Add("Date", "{{request_date}}")
+	req.Header.Add("Authorization",
+		"Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date content-type accept digest content-length\",signature=\"sEl9KI0sK1NTxFYpVa+u8NBxnQx12zDEHSo/ijfvqi9z8zt5O1aXjoy8fyLvg/ICXaHoogb9oJ4C4i1iJDP1RCiTpW0OvwNPP4t0XlGnKlKX4iyLV4CofR8H9o/X5mcsiv/tVP7qCgP92efaisLCVjE9MKMPjDaA7Tj3gBbeYnI=%\"")
+	req.Header.Add("Date", time.Now().Format(time.RFC1123))
 
 	res, err := client.Do(req)
 	if err != nil {
