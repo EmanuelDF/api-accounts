@@ -1,0 +1,7 @@
+(request-target): post /v1/transaction/payments
+host: api.staging-form3.tech
+date: Fri, 29 Feb 2019 14:00:00 GMT
+content-type: application/vnd.api+json
+accept: application/vnd.api+json
+digest: SHA-256=WllU95a/P37KDBmTedpEIIvVtBgRqDdYrHz06NXDuvk=
+content-length: 646
