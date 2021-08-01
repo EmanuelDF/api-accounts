@@ -49,8 +49,8 @@ func main() {
 
 func create() {
 
-	url := "https://api.staging-form3.tech/v1/organisation/accounts"
-	method := "POST"
+	var accountClassification string = "Personal"
+	var country string = "GB"
 
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
@@ -58,9 +58,6 @@ func create() {
 		log.Fatal(err)
 	}
 	uuid := fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
-
-	var accountClassification string = "Personal"
-	var country string = "GB"
 
 	payload := AccountData{
 		Attributes: &AccountAttributes{
@@ -92,6 +89,10 @@ func create() {
 		fmt.Println(err)
 		return
 	}
+
+	url := "https://api.staging-form3.tech/v1/organisation/accounts"
+	method := "POST"
+
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqbody))
 	if err != nil {
 		fmt.Println(err)
@@ -104,7 +105,7 @@ func create() {
 	req.Header.Add("Date", time.Now().Format(time.RFC1123))
 	req.Header.Add("Digest", "SHA-256=WllU95a/P37KDBmTedpEIIvVtBgRqDdYrHz06NXDuvk=")
 
-	fmt.Println(req)
+	// fmt.Println(req)
 
 	res, err := client.Do(req)
 	if err != nil {
