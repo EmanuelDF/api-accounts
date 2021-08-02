@@ -44,14 +44,16 @@ type AccountAttributes struct {
 
 func main() {
 	create()
-	fetch()
-	delete()
+	//fetch()
+	//delete()
 }
 
 func create() {
 
-	var accountClassification string = "Personal"
-	var country string = "GB"
+	var (
+		accountClassification string = "Personal"
+		country string = "GB"
+	)
 
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
@@ -60,7 +62,7 @@ func create() {
 	}
 	uuid := fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 
-	payload := AccountData{
+	var payload = AccountData{
 		Attributes: &AccountAttributes{
 			AccountClassification:   &accountClassification,
 			AccountMatchingOptOut:   new(bool),
@@ -100,19 +102,19 @@ func create() {
 		return
 	}
 
-	var contentLength int = len(reqbody)
-
 	req.Header.Add("Host", "api.form3.tech")
 	req.Header.Add("Date", time.Now().Format(time.RFC1123))
-	req.Header.Add("Accept", "application/vnd.api+json")
-	req.Header.Add("Content-Type", "application/vnd.api+json")
-	req.Header.Add("Content-Length", strconv.FormatInt(int64(contentLength), 10))
+	//req.Header.Add("Accept", "application/vnd.api+json")
 	req.Header.Add("Digest", "SHA-256=WllU95a/P37KDBmTedpEIIvVtBgRqDdYrHz06NXDuvk=")
-	req.Header.Add("Authorization",
-		"Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date accept digest content-length content-type\",signature=\"sEl9KI0sK1NTxFYpVa+u8NBxnQx12zDEHSo/ijfvqi9z8zt5O1aXjoy8fyLvg/ICXaHoogb9oJ4C4i1iJDP1RCiTpW0OvwNPP4t0XlGnKlKX4iyLV4CofR8H9o/X5mcsiv/tVP7qCgP92efaisLCVjE9MKMPjDaA7Tj3gBbeYnI=\"")
+	req.Header.Add("Content-Length", strconv.FormatInt(int64(req.ContentLength), 10))
+	req.Header.Add("Content-Type", "application/vnd.api+json")
+	req.Header.Add("Authorization", "Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\"," +
+		"algorithm=\"rsa-sha256\"," +
+		"headers=\"(request-target) host date digest content-length content-type\"," +
+		"signature=\"dOO1gnywk/Awo2Z0vSxcxrcoPZ51wKbMG8JYIBJ+xn4MUVjDy/ooP7l7EzsDQVZPj8ylkzLMvYoDnzyKA1xNaphoujRpfs1wBoqe4DCMFMeVaDZLsGXbpgijYICCdriYoLo0agjbpeDh+zeyh2b/+wGLevy7oHB+KrBtBHtYDXo=\"")
 
-	fmt.Println("Header: ", req.Header)
-	fmt.Println("Body: ", req.Body)
+	fmt.Println("\nHeader request: ", req.Header)
+	fmt.Println("\nBody request: ", req.Body, "\n ")
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -126,7 +128,7 @@ func create() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(string(body))
+	fmt.Println("Create response: ", string(body))
 }
 
 func fetch() {
@@ -141,10 +143,15 @@ func fetch() {
 		fmt.Println(err)
 		return
 	}
-	req.Header.Add("Authorization",
-		"Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date content-type accept digest content-length\",signature=\"sEl9KI0sK1NTxFYpVa+u8NBxnQx12zDEHSo/ijfvqi9z8zt5O1aXjoy8fyLvg/ICXaHoogb9oJ4C4i1iJDP1RCiTpW0OvwNPP4t0XlGnKlKX4iyLV4CofR8H9o/X5mcsiv/tVP7qCgP92efaisLCVjE9MKMPjDaA7Tj3gBbeYnI=\"")
-	req.Header.Add("Accept", "application/vnd.api+json")
+
+	req.Header.Add("Host", "api.form3.tech")
 	req.Header.Add("Date", time.Now().Format(time.RFC1123))
+	//req.Header.Add("Accept", "application/vnd.api+json")
+	req.Header.Add("Authorization",
+		"Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\"," +
+		"algorithm=\"rsa-sha256\"," +
+		"headers=\"(request-target) host date\"," +
+		"signature=\"sEl9KI0sK1NTxFYpVa+u8NBxnQx12zDEHSo/ijfvqi9z8zt5O1aXjoy8fyLvg/ICXaHoogb9oJ4C4i1iJDP1RCiTpW0OvwNPP4t0XlGnKlKX4iyLV4CofR8H9o/X5mcsiv/tVP7qCgP92efaisLCVjE9MKMPjDaA7Tj3gBbeYnI=\"")
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -158,7 +165,7 @@ func fetch() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(string(body))
+	fmt.Println("Fetch response: ", string(body))
 }
 
 func delete() {
@@ -191,5 +198,5 @@ func delete() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(string(body))
+	fmt.Println("Delete response: ", string(body))
 }
