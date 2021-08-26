@@ -1,4 +1,4 @@
-package main
+package accounts
 
 import (
 	"bytes"
@@ -10,14 +10,11 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"github.com/emanueldf/models"
+
+	"github.com/form3.accounts/models"
 )
 
-func main() {
-	create()
-}
-
-func create() {
+func Create() {
 
 	var (
 		accountClassification = "Personal"
@@ -31,8 +28,8 @@ func create() {
 	}
 	uuid := fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 
-	var payload = AccountData{
-		Attributes: &AccountAttributes{
+	var payload = models.AccountData{
+		Attributes: &models.AccountAttributes{
 			AccountClassification:   &accountClassification,
 			AccountMatchingOptOut:   new(bool),
 			AccountNumber:           "10000004",
@@ -77,9 +74,9 @@ func create() {
 	req.Header.Add("Digest", "SHA-256=WllU95a/P37KDBmTedpEIIvVtBgRqDdYrHz06NXDuvk=")
 	req.Header.Add("Content-Length", strconv.FormatInt(int64(req.ContentLength), 10))
 	req.Header.Add("Content-Type", "application/vnd.api+json")
-	req.Header.Add("Authorization", "Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\"," +
-		"algorithm=\"rsa-sha256\"," +
-		"headers=\"(request-target) host date digest content-length content-type\"," +
+	req.Header.Add("Authorization", "Signature keyId=\"75a8ba12-fff2-4a52-ad8a-e8b34c5ccec8\","+
+		"algorithm=\"rsa-sha256\","+
+		"headers=\"(request-target) host date digest content-length content-type\","+
 		"signature=\"dOO1gnywk/Awo2Z0vSxcxrcoPZ51wKbMG8JYIBJ+xn4MUVjDy/ooP7l7EzsDQVZPj8ylkzLMvYoDnzyKA1xNaphoujRpfs1wBoqe4DCMFMeVaDZLsGXbpgijYICCdriYoLo0agjbpeDh+zeyh2b/+wGLevy7oHB+KrBtBHtYDXo=\"")
 
 	fmt.Println("\nHeader request: ", req.Header)

@@ -1,4 +1,4 @@
-package main
+package accounts
 
 import (
 	"fmt"
@@ -8,11 +8,7 @@ import (
 	"time"
 )
 
-func main() {
-	delete()
-}
-
-func delete() {
+func Delete() {
 
 	url := "https://api.staging-form3.tech/v1/organisation/accounts/{{account_id}}?version=0"
 	method := "DELETE"
