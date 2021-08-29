@@ -1,4 +1,4 @@
-package accounts
+package controllers
 
 import (
 	"fmt"

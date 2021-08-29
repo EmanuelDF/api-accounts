@@ -1,17 +1,16 @@
-package accounts
+package controllers
 
 import (
 	"bytes"
-	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/form3.accounts/models"
+	"github.com/emanueldf/form3-accounts/models"
+	"github.com/emanueldf/form3-accounts/utils"
 )
 
 func Create() {
@@ -21,12 +20,7 @@ func Create() {
 		country               = "GB"
 	)
 
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		log.Fatal(err)
-	}
-	uuid := fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+	uuid := utils.Generate()
 
 	var payload = models.AccountData{
 		Attributes: &models.AccountAttributes{

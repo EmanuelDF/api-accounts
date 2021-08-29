@@ -1,9 +1,9 @@
 package main
 
-import "github.com/form3.accounts/accounts"
+import "github.com/emanueldf/form3-accounts/controllers"
 
 func main() {
-	accounts.Create()
-	accounts.Fetch()
-	accounts.Delete()
+	controllers.Create()
+	//controllers.Fetch()
+	//controllers.Delete()
 }
