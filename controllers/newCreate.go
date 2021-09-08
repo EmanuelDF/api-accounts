@@ -44,6 +44,8 @@ func Init() {
 
 	digest := base64.StdEncoding.EncodeToString([]byte(utils.Sign(utils.ReadPrivateKeyContent(), crypto.SHA256)))
 
+	fmt.Println("Digest: ", digest)
+
 	headers := "(request-target) host date content-type accept digest content-length"
 
 	authorization_header := "Signature: keyId=" + utils.ReadPublicKey() + ",algorithm=\"rsa-sha256\",headers=" + headers + ",signature=" + digest

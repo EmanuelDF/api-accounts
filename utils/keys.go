@@ -77,6 +77,7 @@ func ReadPrivateKeyContent() string {
 	if err != nil {
 		fmt.Print("Error on reading private key.")
 	}
+	// fmt.Println("ReadPrivateKeyContent: ", (strings.TrimSpace(strings.Trim(strings.TrimSpace(string(data)), "- BEGIN RSA PRIVATE KEY END"))))
 	return (strings.TrimSpace(strings.Trim(strings.TrimSpace(string(data)), "- BEGIN RSA PRIVATE KEY END")))
 }
 
