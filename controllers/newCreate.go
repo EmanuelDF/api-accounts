@@ -49,7 +49,6 @@ func Init() {
 	out, err := json.Marshal(payload)
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	bodyDigest := utils.Hash(crypto.SHA256, []byte(strings.Join(flag.Args(), string(out))))
@@ -61,7 +60,7 @@ func Init() {
 	signature += "host:" + host
 	signature += "date:" + signatureDate
 	signature += " content-type: application/json accept: application/json digest: SHA-256=" + base64BodyDigest
-	signature += " content-length:" + string(len(string(out)))
+	signature += " content-length:" + string(rune(len(string(out))))
 
 	headers := "(request-target) host date content-type accept digest content-length"
 
