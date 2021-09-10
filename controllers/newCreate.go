@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,7 +23,7 @@ func Init() {
 	publicKeyFilePath := "/Users/emanuel/go/src/github.com/emanueldf/form3-accounts/certs/test_public_key.pem"
 
 	path := "/v1/organisation/accounts"
-	host := "api.staging-form3.tech"
+	host := "api.form3.tech"
 	baseUrl := "https://" + host
 	fullPath := baseUrl + path
 
@@ -30,7 +31,7 @@ func Init() {
 
 	var payload = models.NewAccountData{
 		Type:           "accounts",
-		ID:             "ad27e265-9605-4b4b-a0e5-3003ea9cc4dc",
+		ID:             utils.Generate(),
 		OrganisationID: utils.Generate(),
 		Attributes: &models.NewAccountAttributes{
 			Country:                &Country,
@@ -56,11 +57,14 @@ func Init() {
 
 	signatureDate := time.Now().Format(time.RFC1123)
 
+	outLength := len(string(out))
+	contentLength := strconv.FormatInt(int64(outLength), 10)
+
 	signature := "(request-target): post" + path
 	signature += "host:" + host
 	signature += "date:" + signatureDate
 	signature += " content-type: application/json accept: application/json digest: SHA-256=" + base64BodyDigest
-	signature += " content-length:" + string(rune(len(string(out))))
+	signature += " content-length:" + contentLength
 
 	headers := "(request-target) host date content-type accept digest content-length"
 
@@ -68,10 +72,10 @@ func Init() {
 
 	base64SignedSignature := base64.StdEncoding.EncodeToString([]byte(signedSignature))
 
-	authorizationHeader := "Signature: keyId=" + utils.GetPublicKeyContent(publicKeyFilePath) +
+	authorizationHeader := "Signature keyId=" + utils.GetPublicKeyContent(publicKeyFilePath) +
 		",algorithm=\"rsa-sha256\",headers=" + headers + ",signature=" + base64SignedSignature
 
-	base64Signature := base64.StdEncoding.EncodeToString([]byte(signature))
+	//base64Signature := base64.StdEncoding.EncodeToString([]byte(signature))
 
 	client := &http.Client{}
 	reqbody, err := json.Marshal(payload)
@@ -86,12 +90,14 @@ func Init() {
 		return
 	}
 
-	req.Header.Add("Accept", "application/vnd.api+json")
-	req.Header.Add("Content-Type", "application/vnd.api+json")
+	req.Header.Add("Host", host)
 	req.Header.Add("Date", time.Now().Format(time.RFC1123))
+	req.Header.Add("Accept", "application/vnd.api+json")
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Content-Length", contentLength)
 	req.Header.Add("Authorization", authorizationHeader)
 	req.Header.Add("Digest", base64BodyDigest)
-	req.Header.Add("Signature-Debug", base64Signature)
+	//req.Header.Add("Signature-Debug", base64Signature)
 
 	fmt.Println("\nHeader request: ", req.Header)
 	fmt.Println("\nBody request: ", req.Body, "\n ")
