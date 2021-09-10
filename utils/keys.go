@@ -11,18 +11,29 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 func Sign(fname string, content string, hashFunc crypto.Hash) string {
-	key := getPrivateKey(fname)
+	key := getPrivateKey(getCertsPath(fname))
 	data := []byte(strings.Join(flag.Args(), content))
 	sign, errSign := rsa.SignPKCS1v15(rand.Reader, key, hashFunc, Hash(hashFunc, data))
 	if errSign != nil {
 		exit(errSign)
 	}
 	return base64.StdEncoding.EncodeToString(sign)
+}
+
+func getCertsPath(fname string) string {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]) + "/certs")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return filepath.Join(dir, fname)
 }
 
 func getPrivateKey(fname string) *rsa.PrivateKey {
@@ -48,7 +59,7 @@ func Hash(hashFunc crypto.Hash, data []byte) []byte {
 }
 
 func GetPublicKeyContent(fname string) string {
-	data, err := ioutil.ReadFile(fname)
+	data, err := ioutil.ReadFile(getCertsPath(fname))
 	if err != nil {
 		fmt.Print("Error on reading public key.")
 	}
