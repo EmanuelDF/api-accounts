@@ -17,11 +17,12 @@ import (
 	"github.com/emanueldf/form3-accounts/utils"
 )
 
+var (
+	privateKeyFilePath = "/certs/test_private_key.pem"
+	publicKeyFilePath  = "/certs/test_public_key.pem"
+)
+
 func Init() {
-
-	privateKeyFilePath := "/certs/test_private_key.pem"
-	publicKeyFilePath := "/certs/test_public_key.pem"
-
 	path := "/v1/organisation/accounts"
 	host := "api.form3.tech"
 	baseUrl := "https://" + host
@@ -60,22 +61,21 @@ func Init() {
 	outLength := len(string(out))
 	contentLength := strconv.FormatInt(int64(outLength), 10)
 
-	signature := "(request-target): post" + path
-	signature += "host:" + host
-	signature += "date:" + signatureDate
-	signature += " content-type: application/json accept: application/json digest: SHA-256=" + base64BodyDigest
-	signature += " content-length:" + contentLength
+	signature := "(request-target): post " + path
+	signature += " host: " + host
+	signature += " date: " + signatureDate
+	signature += " accept: application/vnd.api+json content-type: application/vnd.api+json "
+	signature += " content-length: " + contentLength
+	signature += " digest: SHA-256=" + base64BodyDigest
 
 	headers := "(request-target) host date content-type accept digest content-length"
-
 	signedSignature := utils.Sign(privateKeyFilePath, signature, crypto.SHA256)
-
 	base64SignedSignature := base64.StdEncoding.EncodeToString([]byte(signedSignature))
 
-	authorizationHeader := "Signature keyId=" + utils.GetPublicKeyContent(publicKeyFilePath) +
-		",algorithm=\"rsa-sha256\",headers=" + headers + ",signature=" + base64SignedSignature
-
-	//base64Signature := base64.StdEncoding.EncodeToString([]byte(signature))
+	authorizationHeader := "Signature keyId=" + utils.GetPublicKeyContent(publicKeyFilePath)
+	authorizationHeader += ",algorithm=\"rsa-sha256\""
+	authorizationHeader += ",headers=" + headers
+	authorizationHeader += ",signature=" + base64SignedSignature
 
 	client := &http.Client{}
 	reqbody, err := json.Marshal(payload)
@@ -93,14 +93,13 @@ func Init() {
 	req.Header.Add("Host", host)
 	req.Header.Add("Date", time.Now().Format(time.RFC1123))
 	req.Header.Add("Accept", "application/vnd.api+json")
-	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Content-Type", "application/vnd.api+json")
 	req.Header.Add("Content-Length", contentLength)
 	req.Header.Add("Authorization", authorizationHeader)
 	req.Header.Add("Digest", base64BodyDigest)
-	//req.Header.Add("Signature-Debug", base64Signature)
 
-	fmt.Println("\nHeader request: ", req.Header)
-	fmt.Println("\nBody request: ", req.Body, "\n ")
+	fmt.Println("\nRequest header: ", req.Header)
+	fmt.Println("\nRequest body: ", req.Body)
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -114,6 +113,6 @@ func Init() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Create response: ", string(body))
+	fmt.Println("\nResponse body: ", string(body))
 
 }
