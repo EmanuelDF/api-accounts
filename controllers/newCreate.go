@@ -19,8 +19,8 @@ import (
 
 func Init() {
 
-	privateKeyFilePath := "test_private_key.pem"
-	publicKeyFilePath := "test_public_key.pem"
+	privateKeyFilePath := "/certs/test_private_key.pem"
+	publicKeyFilePath := "/certs/test_public_key.pem"
 
 	path := "/v1/organisation/accounts"
 	host := "api.form3.tech"
