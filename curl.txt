@@ -1,0 +1,73 @@
+curl -X POST -H "Content-Type: application/vnd.api+json" \
+http://localhost:8080/v1/organisation/accounts \
+-d \
+'{
+   "data": {
+     "type": "accounts",
+     "id": "ad27e265-9605-4b4b-a0e5-3003ea9cc4dc",
+     "organisation_id": "eb0bd6f5-c3f5-44b2-b677-acd23cdde73c",
+     "attributes": {
+       "country": "GB",
+       "base_currency": "GBP",
+       "bank_id": "400300",
+       "bank_id_code": "GBDSC",
+       "bic": "NWBKGB22"
+     }
+   }
+ }'
+
+
+ curl -X POST -H "Content-Type: application/vnd.api+json" \
+http://localhost:8080/v1/organisation/accounts \
+-d \
+'{
+   "data": {
+     "type": "accounts",
+     "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+     "organisation_id": "eb0bd6f5-c3f5-44b2-b677-acd23cdde73c",
+     "attributes": {
+       "country": "AU",
+       "base_currency": "AUD",
+       "bank_id": "700300",
+       "bank_id_code": "AUBSB",
+       "bic": "AUBKGB23"
+     }
+   }
+ }'
+
+
+
+  curl -v -X POST -H "Content-Type: application/vnd.api+json" \
+http://localhost:8080/v1/organisation/accounts \
+-d \
+'{
+   "data": {
+     "type": "accounts",
+     "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+     "organisation_id": "eb0bd6f5-c3f5-44b2-b677-acd23cdde73c",
+     "attributes": {
+       "country": "AU",
+       "base_currency": "AUD",
+       "bank_id": "700300",
+       "bank_id_code": "AUBSB",
+       "bic": "AUBKGB23"
+     }
+   },
+   "code":"200"
+ }' | jq
+
+
+
+Found
+curl -v -X DELETE http://localhost:8080/v1/organisation/accounts/6ba7b810-9dad-11d1-80b4-00c04fd430c8?version=0
+
+Fetch
+curl -v -X GET http://localhost:8080/v1/organisation/accounts
+curl -v -X GET http://localhost:8080/v1/organisation/accounts/ad27e265-9605-4b4b-a0e5-3003ea9cc4dc \
+-H "Accept: application/vnd.api+json"
+
+
+Not found
+curl -v -X GET http://localhost:8080/v1/organisation/accounts/b83dc772-6a9c-4375-b693-9e5ad8cd1e54 | jq
+curl -v -X DELETE http://localhost:8080/v1/organisation/accounts/b83dc772-6a9c-4375-b693-9e5ad8cd1e54?version=0 | jq
+
